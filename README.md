@@ -6,6 +6,8 @@ Host the repository in a GitHub organization, not only under a personal account.
 
 The layout follows a Blender-to-Godot split: art is authored outside Godot and exported in, animation clips live in their own tree, and game logic lives under `source/`.
 
+How the engine pieces fit together (scene tree, animation, rendering, UI, actions, camera, models, physics, companion, audio, global state, lighting, import, shipping, shaders, input, and effects) is in `skill.md`.
+
 Each folder contains a `.gitkeep` file so Git stores the empty directory. Delete that file once the folder has real content.
 
 ## assets
@@ -105,88 +107,6 @@ Store listing files. Players never download these inside the game. `marketing/.g
 | Folder | Put here |
 |---|---|
 | `marketing/steam` | Steam store images and video: header capsule, small capsule, main capsule, library capsule, library header, page background, screenshots, and the trailer. Upload these in Steamworks. They do not go in `assets/`. |
-
-## Shaders
-
-Write shaders in `.gdshader` files under `source/shaders/`. The language is Godot Shading Language. Start from the engine's standard material and add only the looks this game needs. Do not write a custom lighting model.
-
-### Shape of a file
-
-1. `shader_type` says where it runs: `spatial` for a 3D mesh, `canvas_item` for UI, `particles` for a particle's motion.
-2. `render_mode` keeps the engine's diffuse and specular models. Change only the modes the art needs, such as drawing both sides of a flat card.
-3. `uniform` values are the knobs in the inspector: colors, textures, and sliders. Share one `.gdshaderinc` of those knobs across the variants so every material speaks the same names.
-4. `vertex()` changes position and UV. `fragment()` writes the built-in outputs: `ALBEDO`, `NORMAL_MAP`, `METALLIC`, `ROUGHNESS`, `ALPHA`. Leave lighting to Godot. Skip a custom `light()` function.
-
-A `ShaderMaterial` (`.tres`) points at the `.gdshader` and is assigned on the mesh.
-
-### How to extend it
-
-One family, several short files. Split by where the material is used (world mesh, interface, particle card, decal), not by stuffing every switch into one shader.
-
-- Shared parameters and helpers go in `.gdshaderinc` files and are pulled in with `#include`.
-- A new look is a `uniform bool` that defaults to off. The expensive path, such as sampling a texture many times to fake thickness, runs only when that switch is on.
-- Motion that should feel stepped snaps time to a fixed interval inside the shader, instead of a smooth wave.
-- Try an idea in the same file. Leave it behind `if (false)` or a comment until it earns a switch. Do not start a second shader system for a test.
-
-The expensive work is the optional path. The default path stays a textured standard material with a cutout alpha.
-
-## Input
-
-One autoload reads devices and publishes a single 2D vector. Characters do not call `Input` for movement themselves. Put that script in `source/globals` and register it as an autoload. Name the actions in the project input map. Do not hard-code key scancodes in gameplay scripts.
-
-### Actions
-
-| Action | Typical binding | Used for |
-|---|---|---|
-| `Move Left`, `Move Right`, `Move Up`, `Move Down` | Left stick axes, with a deadzone | Controller movement |
-| `Action` | A face button and a mouse button | Bark, interact, and other one-shot acts |
-| `Quit` and debug toggles | Keyboard | Editor and debug builds only |
-
-### Device mode
-
-Keep an enum for mouse and controller. In `_input`, a mouse, touch, or key event selects mouse mode. A joypad button or axis selects controller mode. Emit a signal when the mode changes so the cursor and prompts can follow.
-
-Only build the gameplay vector while the game state is play or intro. A `bypass_controls` flag drops input during menus and story locks. Reset the vector to zero when returning to the menu.
-
-### The vector
-
-Each physics frame the character copies `movement_vector`.
-
-- **Controller.** `movement_vector` is `Input.get_vector()` on the four move actions. The stick's deadzone lives on those actions.
-- **Mouse and touch.** Captured motion accumulates into a virtual stick. Clamp its length to an outer radius. Lengths inside an inner radius become zero, and lengths between the two radii remap from 0 to 1. The result stays put when the pointer stops, so the character keeps walking until the player moves the vector back to the center. Touch drag writes the same relative motion.
-
-The character turns that vector into a 3D direction `(x, 0, y)`. Longer means faster, up to the speed the current ground allows. A short vector is a stop. `Action` is a separate one-frame press. It does not steer.
-
-Companions do not get their own movement actions. They read the same vector only when they need to know how hard the player is pulling.
-
-## Effects and ultimate abilities
-
-An effect is a scene the character turns on for a few frames. Particles are one part of it. A full ultimate is that scene plus the animation, a shader flash, light, sound, and a hitbox, started from one script.
-
-### Particles
-
-Add a `GPUParticles3D` when there are many particles, or a `CPUParticles3D` when a script must touch each one. On the node, set `amount`, `lifetime`, and `explosiveness`. `explosiveness` of `1` fires them all in one burst. `0` streams them out over the lifetime.
-
-Two materials do the rest:
-
-- The **process material** moves each particle: spawn point, speed, gravity, scale, and spin. Use a `ParticleProcessMaterial`, or write a `.gdshader` whose first line is `shader_type particles`.
-- The **draw pass** is the mesh and the material each particle shows. A slash or a snowflake is usually a small plane with its own `.gdshader`.
-
-Put the particle scene in `source/fx/`. The script on the character only sets `emitting` and `amount_ratio`. It does not move each particle.
-
-A trail that stays on the ground is a separate mesh, not a particle. Use a `MultiMeshInstance3D` or a line node and leave a piece behind the character.
-
-### A complete ultimate
-
-Time the whole move from one animation clip in `animations/`. The character script travels to that state, then turns the other pieces on at frames inside the clip.
-
-1. **Animation.** A one-shot clip is the clock. Travel to it from the state machine. Do not start the hitbox on the first frame if the swing has not arrived yet.
-2. **Particles.** At the release frame, set `explosiveness` to `1` and `emitting` to `true`. Stop emitting when the burst is done. A blade arc can be a mesh parented to the weapon bone instead of particles.
-3. **Shader.** A `uniform` on the character shader drives a short flash, dissolve, or extra emission. The script animates that number for the length of the move, then sets it back.
-4. **Light, camera, sound.** A light node, a short camera shake, and a sound player switch on in the same frame as the burst. They live on the effect scene in `source/fx/`.
-5. **Hitbox.** Enable the attack shape only on the active frames, then disable it. The effect still playing does not mean the hit is still active.
-
-The effect scene is instanced under the character in `source/entities`. When the animation finishes, the script hides the effect, clears the shader uniform, and disables the hitbox.
 
 ## Project documents
 
