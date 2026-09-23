@@ -76,6 +76,35 @@ Store listing files. Players never download these inside the game. `marketing/.g
 |---|---|
 | `marketing/steam` | Steam store images and video: header capsule, small capsule, main capsule, library capsule, library header, page background, screenshots, and the trailer. Upload these in Steamworks. They do not go in `assets/`. |
 
+## Effects and ultimate abilities
+
+An effect is a scene the character turns on for a few frames. Particles are one part of it. A full ultimate is that scene plus the animation, a shader flash, light, sound, and a hitbox, started from one script.
+
+### Particles
+
+Add a `GPUParticles3D` when there are many particles, or a `CPUParticles3D` when a script must touch each one. On the node, set `amount`, `lifetime`, and `explosiveness`. `explosiveness` of `1` fires them all in one burst. `0` streams them out over the lifetime.
+
+Two materials do the rest:
+
+- The **process material** moves each particle: spawn point, speed, gravity, scale, and spin. Use a `ParticleProcessMaterial`, or write a `.gdshader` whose first line is `shader_type particles`.
+- The **draw pass** is the mesh and the material each particle shows. A slash or a snowflake is usually a small plane with its own `.gdshader`.
+
+Put the particle scene in `source/fx/`. The script on the character only sets `emitting` and `amount_ratio`. It does not move each particle.
+
+A trail that stays on the ground is a separate mesh, not a particle. Use a `MultiMeshInstance3D` or a line node and leave a piece behind the character.
+
+### A complete ultimate
+
+Time the whole move from one animation clip in `animations/`. The character script travels to that state, then turns the other pieces on at frames inside the clip.
+
+1. **Animation.** A one-shot clip is the clock. Travel to it from the state machine. Do not start the hitbox on the first frame if the swing has not arrived yet.
+2. **Particles.** At the release frame, set `explosiveness` to `1` and `emitting` to `true`. Stop emitting when the burst is done. A blade arc can be a mesh parented to the weapon bone instead of particles.
+3. **Shader.** A `uniform` on the character shader drives a short flash, dissolve, or extra emission. The script animates that number for the length of the move, then sets it back.
+4. **Light, camera, sound.** A light node, a short camera shake, and a sound player switch on in the same frame as the burst. They live on the effect scene in `source/fx/`.
+5. **Hitbox.** Enable the attack shape only on the active frames, then disable it. The effect still playing does not mean the hit is still active.
+
+The effect scene is instanced under the character in `source/entities`. When the animation finishes, the script hides the effect, clears the shader uniform, and disables the hitbox.
+
 ## Project documents
 
 These files are blank templates. Fill them for the game you are making. Do not paste in another title's history.
