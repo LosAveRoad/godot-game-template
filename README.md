@@ -1,6 +1,8 @@
 # Godot game template
 
-Empty folder skeleton for a Godot project that keeps exported art separate from gameplay code. This repository has folders and this README only. It does not include a `project.godot`, scenes, scripts, or sample assets. Create the Godot project in this directory when you are ready to start.
+Empty folder skeleton for a Godot project that keeps exported art separate from gameplay code. It does not include a `project.godot`, scenes, or sample assets. Create the Godot project in this directory when you are ready to start.
+
+Host the repository in a GitHub organization, not only under a personal account. Organization membership is how art, code, and review stay on one team.
 
 The layout follows a Blender-to-Godot split: art is authored outside Godot and exported in, animation clips live in their own tree, and game logic lives under `source/`.
 
@@ -57,14 +59,25 @@ One-off editor or import utilities that are not part of the running game and are
 
 ## Project documents
 
-The production that used this layout kept its planning next to the folders:
+These files are blank templates. Fill them for the game you are making. Do not paste in another title's history.
 
-| Document | What it is |
+| Document | What to write |
 |---|---|
-| `docs/prd.md` | What the game is, what is in scope, and the milestone dates. |
-| `docs/roles.md` | Who owns design, art, pipeline, and code, and which folder they write to. |
-| `docs/production-log.md` | The weekly record of what landed in the build. |
-| `docs/milestones.md` | Those milestones mapped onto the folders above. |
+| `docs/prd.md` | Summary, timebox, player fantasy, core loop, pillars, content, pipeline, out of scope, milestones, and success. |
+| `docs/roles.md` | Leads, art, game and support, which role writes which folder, and how a week runs. |
+| `docs/production-log.md` | One section per week: date, title, and what landed in the build. |
+| `docs/milestones.md` | Each milestone's name, done-when, and the folders that show it. |
+
+## Review bot
+
+Install the [OpenHands GitHub App](https://github.com/apps/openhands-agent) on the GitHub organization that owns this repository. In the organization (or this repository) add an Actions secret named `LLM_API_KEY`.
+
+The review workflow does not run on every pull request. After the secret exists, request a review in either of these ways:
+
+- Add the `review-this` label to the pull request.
+- Request `openhands-agent` as a reviewer.
+
+Create the `review-this` label under Issues → Labels if it is not there yet. The workflow file is `.github/workflows/pr-review-by-openhands.yml`.
 
 ## Suggested first steps
 
