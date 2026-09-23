@@ -1,5 +1,13 @@
-# Engine guide
-
+---
+name: godot-template
+description: >
+  Build and edit a Godot project that uses this folder layout: art finished
+  outside the engine, clips under animations/, gameplay under source/.
+  Use when the user works in this template, asks where a file belongs, or
+  changes the scene tree, animation, rendering, UI, actions, camera, models,
+  physics, companions, audio, global state, lighting, import, shipping,
+  shaders, input, or effects. Use when the user runs /godot-template.
+---
 How to build a game in this folder layout. Art is finished outside Godot and exported in. Godot holds scenes, gameplay, and the shipping shell. Read `README.md` for the folder map. This file is the runtime rule for each system.
 
 ## Scene tree

@@ -6,7 +6,7 @@ Host the repository in a GitHub organization, not only under a personal account.
 
 The layout follows a Blender-to-Godot split: art is authored outside Godot and exported in, animation clips live in their own tree, and game logic lives under `source/`.
 
-How the engine pieces fit together (scene tree, animation, rendering, UI, actions, camera, models, physics, companion, audio, global state, lighting, import, shipping, shaders, input, and effects) is in `skill.md`.
+How the engine pieces fit together (scene tree, animation, rendering, UI, actions, camera, models, physics, companion, audio, global state, lighting, import, shipping, shaders, input, and effects) is the harness skill `.grok/skills/godot-template/SKILL.md`. Invoke it with `/godot-template`.
 
 Each folder contains a `.gitkeep` file so Git stores the empty directory. Delete that file once the folder has real content.
 
