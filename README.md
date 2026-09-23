@@ -76,6 +76,30 @@ Store listing files. Players never download these inside the game. `marketing/.g
 |---|---|
 | `marketing/steam` | Steam store images and video: header capsule, small capsule, main capsule, library capsule, library header, page background, screenshots, and the trailer. Upload these in Steamworks. They do not go in `assets/`. |
 
+## Shaders
+
+Write shaders in `.gdshader` files under `source/shaders/`. The language is Godot Shading Language. Start from the engine's standard material and add only the looks this game needs. Do not write a custom lighting model.
+
+### Shape of a file
+
+1. `shader_type` says where it runs: `spatial` for a 3D mesh, `canvas_item` for UI, `particles` for a particle's motion.
+2. `render_mode` keeps the engine's diffuse and specular models. Change only the modes the art needs, such as drawing both sides of a flat card.
+3. `uniform` values are the knobs in the inspector: colors, textures, and sliders. Share one `.gdshaderinc` of those knobs across the variants so every material speaks the same names.
+4. `vertex()` changes position and UV. `fragment()` writes the built-in outputs: `ALBEDO`, `NORMAL_MAP`, `METALLIC`, `ROUGHNESS`, `ALPHA`. Leave lighting to Godot. Skip a custom `light()` function.
+
+A `ShaderMaterial` (`.tres`) points at the `.gdshader` and is assigned on the mesh.
+
+### How to extend it
+
+One family, several short files. Split by where the material is used (world mesh, interface, particle card, decal), not by stuffing every switch into one shader.
+
+- Shared parameters and helpers go in `.gdshaderinc` files and are pulled in with `#include`.
+- A new look is a `uniform bool` that defaults to off. The expensive path, such as sampling a texture many times to fake thickness, runs only when that switch is on.
+- Motion that should feel stepped snaps time to a fixed interval inside the shader, instead of a smooth wave.
+- Try an idea in the same file. Leave it behind `if (false)` or a comment until it earns a switch. Do not start a second shader system for a test.
+
+The expensive work is the optional path. The default path stays a textured standard material with a cutout alpha.
+
 ## Effects and ultimate abilities
 
 An effect is a scene the character turns on for a few frames. Particles are one part of it. A full ultimate is that scene plus the animation, a shader flash, light, sound, and a hitbox, started from one script.
