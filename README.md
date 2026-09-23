@@ -25,7 +25,20 @@ Exported art. These files are the models, images, and sounds the game displays. 
 
 ## animations
 
-Animation clips exported on their own, one clip (or one shot) per folder. A typical clip is a glTF plus the Godot animation resource produced on import. Character scenes and animation libraries point at these files. Do not put the character mesh here, and do not put the animation state machine here.
+Finish every clip in Blender before it enters Godot. Author the `.blend` file under `blender/animations/`, on a rig that lives in `blender/characters/`. `blender/.gdignore` keeps those files out of the Godot import.
+
+Export the finished shot as glTF into `animations/`, one clip per folder. The Blender Studio glTF Import plugin reads the scene extras (`asset_type` of `ANIMATION`, `anim_type` such as `LOOP`, and `ref_asset_id`) and writes the Godot animation resource next to the glTF. It then registers that clip on the character library named by `asset_index.json`.
+
+Character meshes stay in `assets/char`. Animation state machines stay in `source/entities`. They choose which imported clip plays. They are not authored in Blender.
+
+## blender
+
+Source files for the art tool. The game does not load them.
+
+| Folder | Put here |
+|---|---|
+| `blender/characters` | Character rigs. Animation clips are made on these rigs. |
+| `blender/animations` | The `.blend` file for each shot. Export only after the clip is finished. |
 
 ## source
 
@@ -47,7 +60,24 @@ Gameplay. Scripts and the scenes that assemble the game live here. They instance
 
 ## addons
 
-Editor plugins. Each plugin gets its own subfolder with its `plugin.cfg`. Enable plugins from the Godot project settings after you create `project.godot`.
+Two plugins are part of the default project setup. After Godot creates `project.godot`, enable both under Project Settings, Plugins.
+
+| Plugin | Path | What it does |
+|---|---|---|
+| Blender Studio glTF Import | `addons/blender_studio_gltf_import` | Already in this repository. On glTF reimport, saves each Blender animation to a `.tres` and adds it to that character's animation library. |
+| Godot AI | `addons/godot_ai` | [hi-godot/godot-ai](https://github.com/hi-godot/godot-ai), Godot 4.7 or newer. Install a published release so `plugin.cfg` is at `addons/godot_ai/plugin.cfg`. It connects an MCP client to the open editor. |
+
+In `project.godot` the enabled list is:
+
+```
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/blender_studio_gltf_import/plugin.cfg", "res://addons/godot_ai/plugin.cfg")
+```
+
+Godot AI is not copied into this repository. Follow that project's release install. Do not paste a source snapshot over an existing `addons/godot_ai` folder.
+
+The import plugin looks up characters in `asset_index.json` and materials in `material_index.json` at the project root. Add an entry before importing a new character's clips.
 
 ## tests
 
