@@ -55,6 +55,17 @@ Automated checks. A test scene or script belongs here, not inside a shipping lev
 
 One-off editor or import utilities that are not part of the running game and are not editor plugins.
 
+## Project documents
+
+The production that used this layout kept its planning next to the folders:
+
+| Document | What it is |
+|---|---|
+| `docs/prd.md` | What the game is, what is in scope, and the milestone dates. |
+| `docs/roles.md` | Who owns design, art, pipeline, and code, and which folder they write to. |
+| `docs/production-log.md` | The weekly record of what landed in the build. |
+| `docs/milestones.md` | Those milestones mapped onto the folders above. |
+
 ## Suggested first steps
 
 1. Open this folder in Godot and let it create `project.godot`, or create the project from the project manager and point it here.
