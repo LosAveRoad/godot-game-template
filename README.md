@@ -130,6 +130,35 @@ One family, several short files. Split by where the material is used (world mesh
 
 The expensive work is the optional path. The default path stays a textured standard material with a cutout alpha.
 
+## Input
+
+One autoload reads devices and publishes a single 2D vector. Characters do not call `Input` for movement themselves. Put that script in `source/globals` and register it as an autoload. Name the actions in the project input map. Do not hard-code key scancodes in gameplay scripts.
+
+### Actions
+
+| Action | Typical binding | Used for |
+|---|---|---|
+| `Move Left`, `Move Right`, `Move Up`, `Move Down` | Left stick axes, with a deadzone | Controller movement |
+| `Action` | A face button and a mouse button | Bark, interact, and other one-shot acts |
+| `Quit` and debug toggles | Keyboard | Editor and debug builds only |
+
+### Device mode
+
+Keep an enum for mouse and controller. In `_input`, a mouse, touch, or key event selects mouse mode. A joypad button or axis selects controller mode. Emit a signal when the mode changes so the cursor and prompts can follow.
+
+Only build the gameplay vector while the game state is play or intro. A `bypass_controls` flag drops input during menus and story locks. Reset the vector to zero when returning to the menu.
+
+### The vector
+
+Each physics frame the character copies `movement_vector`.
+
+- **Controller.** `movement_vector` is `Input.get_vector()` on the four move actions. The stick's deadzone lives on those actions.
+- **Mouse and touch.** Captured motion accumulates into a virtual stick. Clamp its length to an outer radius. Lengths inside an inner radius become zero, and lengths between the two radii remap from 0 to 1. The result stays put when the pointer stops, so the character keeps walking until the player moves the vector back to the center. Touch drag writes the same relative motion.
+
+The character turns that vector into a 3D direction `(x, 0, y)`. Longer means faster, up to the speed the current ground allows. A short vector is a stop. `Action` is a separate one-frame press. It does not steer.
+
+Companions do not get their own movement actions. They read the same vector only when they need to know how hard the player is pulling.
+
 ## Effects and ultimate abilities
 
 An effect is a scene the character turns on for a few frames. Particles are one part of it. A full ultimate is that scene plus the animation, a shader flash, light, sound, and a hitbox, started from one script.
