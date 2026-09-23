@@ -57,6 +57,25 @@ Automated checks. A test scene or script belongs here, not inside a shipping lev
 
 One-off editor or import utilities that are not part of the running game and are not editor plugins.
 
+## design
+
+Reference pictures for the team. The game does not load these files. `design/.gdignore` tells Godot to skip the folder, so the pictures are not imported and are not packed into the game.
+
+| Folder | Put here |
+|---|---|
+| `design/concepts` | Concept art, mood images, character and environment reference, and scans of paper models. |
+| `design/ux` | Wireframes, flow diagrams, UI prototypes, and exported boards from a design tool. |
+
+Finished interface art is separate. Menu backgrounds, icons, and the cursor that the game actually shows go in `source/user_interface`. Textures shared by materials go in `assets/textures`.
+
+## marketing
+
+Store listing files. Players never download these inside the game. `marketing/.gdignore` keeps Godot from importing them.
+
+| Folder | Put here |
+|---|---|
+| `marketing/steam` | Steam store images and video: header capsule, small capsule, main capsule, library capsule, library header, page background, screenshots, and the trailer. Upload these in Steamworks. They do not go in `assets/`. |
+
 ## Project documents
 
 These files are blank templates. Fill them for the game you are making. Do not paste in another title's history.
