@@ -9,7 +9,3 @@
 ## Templates stay blank
 
 <!-- Confirm those files are still fill-in templates. If this pull request does not touch them, write: not applicable -->
-
-## Review bot
-
-<!-- Ask for a review by adding the review-this label, or by requesting openhands-agent as a reviewer. -->

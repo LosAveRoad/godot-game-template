@@ -68,16 +68,11 @@ These files are blank templates. Fill them for the game you are making. Do not p
 | `docs/production-log.md` | One section per week: date, title, and what landed in the build. |
 | `docs/milestones.md` | Each milestone's name, done-when, and the folders that show it. |
 
-## Review bot
+## Pull requests
 
-Install the [OpenHands GitHub App](https://github.com/apps/openhands-agent) on the GitHub organization that owns this repository. In the organization (or this repository) add an Actions secret named `LLM_API_KEY`.
+Every pull request must use `.github/pull_request_template.md`. The body needs three filled sections: `Summary`, `Org templates`, and `Templates stay blank`. HTML comments alone do not count.
 
-The review workflow does not run on every pull request. After the secret exists, request a review in either of these ways:
-
-- Add the `review-this` label to the pull request.
-- Request `openhands-agent` as a reviewer.
-
-Create the `review-this` label under Issues → Labels if it is not there yet. The workflow file is `.github/workflows/pr-review-by-openhands.yml`.
+`.github/workflows/pr-template.yml` runs on each pull request open, edit, update, reopen, and ready-for-review event. It calls `tools/check_pr_body.py`. A missing or empty section fails the check.
 
 ## Suggested first steps
 

@@ -7,7 +7,6 @@ REQUIRED = (
     "Summary",
     "Org templates",
     "Templates stay blank",
-    "Review bot",
 )
 
 
